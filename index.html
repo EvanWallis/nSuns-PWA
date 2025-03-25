@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#007bff">
+    <title>Custom nSuns 5-Day Program</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Custom nSuns 5-Day Program</h1>
+        </header>
+        
+        <div class="training-maxes">
+            <h2>Training Maxes</h2>
+            <div class="tm-inputs">
+                <div class="tm-input">
+                    <label for="bench-tm">Bench Press (lbs)</label>
+                    <input type="number" id="bench-tm" min="0" step="5">
+                </div>
+                <div class="tm-input">
+                    <label for="row-tm">Barbell Row (lbs)</label>
+                    <input type="number" id="row-tm" min="0" step="5">
+                </div>
+                <div class="tm-input">
+                    <label for="ohp-tm">Overhead Press (lbs)</label>
+                    <input type="number" id="ohp-tm" min="0" step="5">
+                </div>
+                <div class="tm-input">
+                    <label for="lat-tm">Lat Pulldown (lbs)</label>
+                    <input type="number" id="lat-tm" min="0" step="5">
+                </div>
+                <button id="save-tms">Save Training Maxes</button>
+            </div>
+        </div>
+
+        <div class="days-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-day="1">Day 1</button>
+                <button class="tab-btn" data-day="2">Day 2</button>
+                <button class="tab-btn" data-day="3">Day 3</button>
+                <button class="tab-btn" data-day="4">Day 4</button>
+                <button class="tab-btn" data-day="5">Day 5</button>
+            </div>
+
+            <div class="tab-content">
+                <div class="day-content active" id="day-1">
+                    <h2>Day 1: Bench Press & Overhead Press</h2>
+                    <div class="workout-section">
+                        <h3>T1: Bench Press</h3>
+                        <table class="workout-table" id="bench-t1">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                    <th>AMRAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="workout-section">
+                        <h3>T2: Overhead Press</h3>
+                        <table class="workout-table" id="ohp-t2">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="day-content" id="day-2">
+                    <h2>Day 2: Barbell Row & Front Squat</h2>
+                    <div class="workout-section">
+                        <h3>T1: Barbell Row</h3>
+                        <table class="workout-table" id="row-t1">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                    <th>AMRAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="workout-section">
+                        <h3>T2: Front Squat</h3>
+                        <p>T2 exercise is optional for this custom program.</p>
+                    </div>
+                </div>
+
+                <div class="day-content" id="day-3">
+                    <h2>Day 3: Overhead Press & Incline Bench</h2>
+                    <div class="workout-section">
+                        <h3>T1: Overhead Press</h3>
+                        <table class="workout-table" id="ohp-t1">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                    <th>AMRAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="workout-section">
+                        <h3>T2: Incline Bench</h3>
+                        <table class="workout-table" id="incline-t2">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="day-content" id="day-4">
+                    <h2>Day 4: Lat Pulldown & Sumo Deadlift</h2>
+                    <div class="workout-section">
+                        <h3>T1: Lat Pulldown</h3>
+                        <table class="workout-table" id="lat-t1">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                    <th>AMRAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="workout-section">
+                        <h3>T2: Sumo Deadlift</h3>
+                        <p>T2 exercise is optional for this custom program.</p>
+                    </div>
+                </div>
+
+                <div class="day-content" id="day-5">
+                    <h2>Day 5: Bench Press & Close Grip Bench Press</h2>
+                    <div class="workout-section">
+                        <h3>T1: Bench Press</h3>
+                        <table class="workout-table" id="bench-t1-day5">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                    <th>AMRAP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="workout-section">
+                        <h3>T2: Close Grip Bench Press</h3>
+                        <table class="workout-table" id="cgbp-t2">
+                            <thead>
+                                <tr>
+                                    <th>Set</th>
+                                    <th>Percentage</th>
+                                    <th>Weight (lbs)</th>
+                                    <th>Reps</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pr-tracker">
+            <h2>PR Tracker</h2>
+            <div id="pr-history">
+                <!-- Will be filled by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification">
+        <p id="notification-message"></p>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
