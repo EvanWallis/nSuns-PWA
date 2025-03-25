@@ -2,16 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#007bff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="nSuns 5-Day">
     <title>Custom nSuns 5-Day Program</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <base href="/nSuns-PWA/">
 </head>
 <body>
     <div class="container">
@@ -90,7 +86,7 @@
                 </div>
 
                 <div class="day-content" id="day-2">
-                    <h2>Day 2: Barbell Row & Front Squat</h2>
+                    <h2>Day 2: Barbell Row</h2>
                     <div class="workout-section">
                         <h3>T1: Barbell Row</h3>
                         <table class="workout-table" id="row-t1">
@@ -107,10 +103,6 @@
                                 <!-- Will be filled by JavaScript -->
                             </tbody>
                         </table>
-                    </div>
-                    <div class="workout-section">
-                        <h3>T2: Front Squat</h3>
-                        <p>T2 exercise is optional for this custom program.</p>
                     </div>
                 </div>
 
@@ -152,7 +144,7 @@
                 </div>
 
                 <div class="day-content" id="day-4">
-                    <h2>Day 4: Lat Pulldown & Sumo Deadlift</h2>
+                    <h2>Day 4: Lat Pulldown</h2>
                     <div class="workout-section">
                         <h3>T1: Lat Pulldown</h3>
                         <table class="workout-table" id="lat-t1">
@@ -169,10 +161,6 @@
                                 <!-- Will be filled by JavaScript -->
                             </tbody>
                         </table>
-                    </div>
-                    <div class="workout-section">
-                        <h3>T2: Sumo Deadlift</h3>
-                        <p>T2 exercise is optional for this custom program.</p>
                     </div>
                 </div>
 
@@ -229,11 +217,11 @@
 
     <script src="app.js"></script>
     <script>
-        // Register service worker with scope for GitHub Pages
+        // Register service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js', {scope: '/nSuns-PWA/'})
-                    .then(reg => console.log('Service Worker registered with scope:', reg.scope))
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
                     .catch(err => console.log('Service Worker registration failed:', err));
             });
         }
