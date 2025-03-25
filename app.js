@@ -494,6 +494,9 @@ function stopTimer(completed = false) {
     clearInterval(timerInterval);
     timerInterval = null;
     
+    // Hide the timer element
+    document.getElementById('rest-timer').style.display = 'none';
+    
     if (completed) {
         // Vibration feedback if available
         if (window.navigator && window.navigator.vibrate) {
@@ -580,6 +583,19 @@ function init() {
     setupEventListeners();
     updateAllWorkouts();
     updateOnlineStatus(); // Check initial online status
+    
+    // Remove all "Mark Day Complete" buttons and badges
+    const markCompleteBtns = document.querySelectorAll('.mark-complete-btn');
+    markCompleteBtns.forEach(btn => {
+        if (btn.parentNode) {
+            btn.parentNode.removeChild(btn);
+        }
+    });
+    
+    const badges = document.querySelectorAll('.completion-badge');
+    badges.forEach(badge => {
+        badge.style.display = 'none';
+    });
     
     // Check if app was launched from home screen
     if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
