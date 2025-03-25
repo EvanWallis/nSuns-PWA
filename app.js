@@ -45,7 +45,7 @@ const elements = {
         lat: document.getElementById('lat-tm')
     },
     saveTmsBtn: document.getElementById('save-tms'),
-    tabBtns: document.querySelectorAll('.tab-btn'),
+    resetAllBtn: document.getElementById('reset-all'),
     dayContents: document.querySelectorAll('.day-content'),
     workoutTables: {
         benchT1: document.getElementById('bench-t1'),
@@ -162,6 +162,11 @@ function loadState() {
         // Update all workouts with saved TMs
         updateAllWorkouts();
         updatePRHistory();
+    } else {
+        // First time user - show welcome notification
+        setTimeout(() => {
+            showNotification('Welcome! Set your training maxes to get started.');
+        }, 500);
     }
 }
 
@@ -299,31 +304,53 @@ function handleAmrapLog(e) {
     inputField.value = '';
 }
 
-// Tab switching
-function setupTabs() {
-    elements.tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // Remove active class from all buttons and contents
-            elements.tabBtns.forEach(b => b.classList.remove('active'));
-            elements.dayContents.forEach(c => c.classList.remove('active'));
-            
-            // Add active class to clicked button and corresponding content
-            btn.classList.add('active');
-            const day = btn.dataset.day;
-            document.getElementById(`day-${day}`).classList.add('active');
-        });
+// No day selection needed anymore - all days are shown
+function setupProgram() {
+    // Add some visual enhancements
+    elements.dayContents.forEach(content => {
+        content.classList.add('show-all');
     });
+}
+
+// Reset all data
+function resetAllData() {
+    if (confirm('Are you sure you want to reset all data? This will erase all your training maxes and PR history.')) {
+        // Reset program state
+        programState = {
+            trainingMaxes: {
+                bench: 0,
+                row: 0,
+                ohp: 0,
+                lat: 0
+            },
+            prHistory: []
+        };
+        
+        // Reset input fields
+        elements.tmInputs.bench.value = '';
+        elements.tmInputs.row.value = '';
+        elements.tmInputs.ohp.value = '';
+        elements.tmInputs.lat.value = '';
+        
+        // Update UI
+        saveState();
+        updateAllWorkouts();
+        updatePRHistory();
+        
+        showNotification('All data has been reset successfully!');
+    }
 }
 
 // Event Listeners
 function setupEventListeners() {
     elements.saveTmsBtn.addEventListener('click', updateTrainingMaxes);
+    elements.resetAllBtn.addEventListener('click', resetAllData);
 }
 
 // Initialize app
 function init() {
     loadState();
-    setupTabs();
+    setupProgram();
     setupEventListeners();
     updateAllWorkouts();
 }
