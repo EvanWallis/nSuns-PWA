@@ -296,12 +296,24 @@ function handleAmrapLog(e) {
         const change = newTM - oldTM;
         const changeText = change > 0 ? `increased by ${change}` : `decreased by ${Math.abs(change)}`;
         showNotification(`${lift.charAt(0).toUpperCase() + lift.slice(1)} training max ${changeText} lbs!`);
+        
+        // Add celebration animation to the workout section
+        const section = btn.closest('.workout-section');
+        section.classList.add('celebrate');
+        setTimeout(() => {
+            section.classList.remove('celebrate');
+        }, 1000);
     } else {
         showNotification(`No change to ${lift} training max.`);
     }
     
     // Clear input field
     inputField.value = '';
+    
+    // Add haptic feedback if available (iOS)
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(100);
+    }
 }
 
 // No day selection needed anymore - all days are shown
@@ -345,6 +357,33 @@ function resetAllData() {
 function setupEventListeners() {
     elements.saveTmsBtn.addEventListener('click', updateTrainingMaxes);
     elements.resetAllBtn.addEventListener('click', resetAllData);
+    
+    // Check for online/offline status
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+}
+
+// Check if user is online/offline
+function updateOnlineStatus() {
+    const offlineIndicator = document.createElement('div');
+    offlineIndicator.className = 'offline-indicator';
+    offlineIndicator.id = 'offline-indicator';
+    
+    if (!navigator.onLine) {
+        offlineIndicator.textContent = '📴 Offline Mode';
+        offlineIndicator.classList.add('show');
+        document.body.appendChild(offlineIndicator);
+    } else {
+        const existingIndicator = document.getElementById('offline-indicator');
+        if (existingIndicator) {
+            existingIndicator.classList.remove('show');
+            setTimeout(() => {
+                if (existingIndicator.parentNode) {
+                    existingIndicator.parentNode.removeChild(existingIndicator);
+                }
+            }, 300);
+        }
+    }
 }
 
 // Initialize app
@@ -353,6 +392,12 @@ function init() {
     setupProgram();
     setupEventListeners();
     updateAllWorkouts();
+    updateOnlineStatus(); // Check initial online status
+    
+    // Check if app was launched from home screen
+    if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
+        showNotification('App launched in standalone mode!');
+    }
 }
 
 // Start the app when DOM is loaded
