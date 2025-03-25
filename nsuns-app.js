@@ -1,7 +1,5 @@
 /**
  * nSuns 5-Day Program - Workout Tracker App
- * This app allows users to track their lifts, with automated training max updates 
- * based on AMRAP (As Many Reps As Possible) sets
  */
 
 // ==============================================
@@ -18,7 +16,7 @@ const programData = {
         { percentage: 0.80, reps: 3 },
         { percentage: 0.75, reps: 5 },
         { percentage: 0.70, reps: 5 },
-        { percentage: 0.65, reps: '5+' }  // AMRAP set
+        { percentage: 0.65, reps: '5+' }  // AMRAP set (9th set) - WILL NOT AFFECT TM
     ],
     // Day 5 T1 bench press specific percentages
     day5BenchPercentages: [
@@ -30,7 +28,7 @@ const programData = {
         { percentage: 0.80, reps: 5 },
         { percentage: 0.75, reps: 6 },
         { percentage: 0.70, reps: 7 },
-        { percentage: 0.65, reps: '8+' }  // AMRAP set
+        { percentage: 0.65, reps: '8+' }  // AMRAP set (9th set) - WILL NOT AFFECT TM
     ],
     // T2 percentages for accessory lifts
     t2Percentages: [
@@ -96,8 +94,6 @@ const elements = {
 
 /**
  * Rounds a number to the nearest 5
- * @param {number} num - Number to round
- * @return {number} Rounded number
  */
 function roundToNearest5(num) {
     return Math.round(num / 5) * 5;
@@ -105,9 +101,9 @@ function roundToNearest5(num) {
 
 /**
  * Shows a notification message to the user
- * @param {string} message - Message to display
  */
 function showNotification(message) {
+    console.log("Showing notification:", message);
     elements.notificationMessage.textContent = message;
     elements.notification.classList.add('show');
     
@@ -118,14 +114,23 @@ function showNotification(message) {
 
 /**
  * Calculates new training max based on AMRAP performance
- * Only the 95% set (3rd set) can increase the training max now
+ * Only the 95% set (3rd set) can increase the training max
+ * The 9th set (65% AMRAP) will NEVER affect the TM
+ * 
  * @param {number} currentTM - Current training max
  * @param {number} reps - Reps performed on AMRAP set
  * @param {number} percentage - Percentage of TM for that set
+ * @param {number} setIndex - Index of the set (0-based)
  * @return {number} New training max
  */
-function calculateNewTM(currentTM, reps, percentage) {
-    console.log(`Calculating new TM: current=${currentTM}, reps=${reps}, percentage=${percentage}`);
+function calculateNewTM(currentTM, reps, percentage, setIndex) {
+    console.log(`Calculating new TM: current=${currentTM}, reps=${reps}, percentage=${percentage}, setIndex=${setIndex}`);
+    
+    // If it's the 9th set (index 8), NEVER change the TM regardless of performance
+    if (setIndex === 8) {
+        console.log("9th set detected - will not affect training max");
+        return currentTM;
+    }
     
     // Only the 95% (third set) can increase the training max
     if (percentage === 0.95) {
@@ -133,21 +138,15 @@ function calculateNewTM(currentTM, reps, percentage) {
         if (reps === 1) return currentTM;
         if (reps === 2) return currentTM + 5;
         if (reps >= 3) return currentTM + 10;
-    } 
-    // All other AMRAP sets (including Day 5 bench) can ONLY decrease TM if performance is poor
-    else if (percentage === 0.65) {
-        // Log for debugging
-        console.log(`65% set detected - reps: ${reps} - should never increase TM`);
-        
-        // Only decrease, never increase
-        if (reps < 5) return currentTM - 5;
-        return currentTM; // Explicitly return the same TM no matter how many reps
     }
     
     // No change for all other cases
     return currentTM;
 }
 
+/**
+ * Adds a PR to the history
+ */
 function addPRToHistory(lift, oldTM, newTM, reps, percentage) {
     const date = new Date();
     const formattedDate = date.toLocaleDateString();
@@ -255,12 +254,14 @@ function updateTrainingMaxes() {
 
 /**
  * Generates workout table rows for T1 exercises
- * @param {string} tableId - ID of table to populate
- * @param {number} tm - Training max to use
- * @param {boolean} useDay5Format - Whether to use Day 5 bench format
  */
 function generateT1Rows(tableId, tm, useDay5Format = false) {
     const tbody = document.querySelector(`#${tableId} tbody`);
+    if (!tbody) {
+        console.error(`Table body not found for ${tableId}`);
+        return;
+    }
+    
     tbody.innerHTML = '';
     
     // Use Day 5 bench format if specified
@@ -274,6 +275,11 @@ function generateT1Rows(tableId, tm, useDay5Format = false) {
         // Add class for AMRAP sets
         if (isAmrap) {
             row.classList.add('amrap-set');
+        }
+        
+        // Add special class for 9th set (non-TM affecting set)
+        if (index === 8) {
+            row.classList.add('non-tm-set');
         }
         
         row.innerHTML = `
@@ -315,11 +321,14 @@ function generateT1Rows(tableId, tm, useDay5Format = false) {
 
 /**
  * Generates workout table rows for T2 exercises
- * @param {string} tableId - ID of table to populate
- * @param {number} tm - Training max to use
  */
 function generateT2Rows(tableId, tm) {
     const tbody = document.querySelector(`#${tableId} tbody`);
+    if (!tbody) {
+        console.error(`Table body not found for ${tableId}`);
+        return;
+    }
+    
     tbody.innerHTML = '';
     
     programData.t2Percentages.forEach((set, index) => {
@@ -377,7 +386,6 @@ function updateAllWorkouts() {
 
 /**
  * Handles AMRAP set logging
- * @param {Event} e - Click event
  */
 function handleAmrapLog(e) {
     const btn = e.target;
@@ -391,8 +399,11 @@ function handleAmrapLog(e) {
     
     const lift = btn.dataset.lift;
     const percentage = parseFloat(btn.dataset.percentage);
+    const setIndex = parseInt(btn.dataset.setIndex);
     const oldTM = programState.trainingMaxes[lift];
-    const newTM = calculateNewTM(oldTM, reps, percentage);
+    
+    // Pass the set index to calculateNewTM so we can identify 9th sets
+    const newTM = calculateNewTM(oldTM, reps, percentage, setIndex);
     
     // Update training max if changed
     if (newTM !== oldTM) {
@@ -421,7 +432,12 @@ function handleAmrapLog(e) {
             section.classList.remove('celebrate');
         }, 1000);
     } else {
-        showNotification(`No change to ${lift} training max.`);
+        // Special message for 9th set AMRAP
+        if (setIndex === 8) {
+            showNotification(`9th set AMRAP does not affect training max. ${reps} reps logged.`);
+        } else {
+            showNotification(`No change to ${lift} training max.`);
+        }
     }
     
     // Clear input field
@@ -435,8 +451,6 @@ function handleAmrapLog(e) {
 
 /**
  * Calculate plate configuration for a given weight
- * @param {number} weight - Weight to calculate plates for
- * @return {Object} Configuration of plates needed
  */
 function calculatePlates(weight) {
     // Assuming 45lb bar
@@ -476,7 +490,6 @@ function calculatePlates(weight) {
 
 /**
  * Shows plate calculation in a notification
- * @param {number} weight - Weight to calculate plates for
  */
 function showPlateCalculation(weight) {
     const plates = calculatePlates(weight);
@@ -508,52 +521,68 @@ function showPlateCalculation(weight) {
 }
 
 // ==============================================
-// PROGRAM SETUP - Initialize app features
+// DAY SELECTION - For navigating workout days
 // ==============================================
 
 /**
- * Sets up program features
+ * Sets up the day selection buttons
  */
-function setupProgram() {
-    // Add rest timer button
-    const timerButton = document.createElement('button');
-    timerButton.id = 'timer-toggle';
-    timerButton.textContent = '⏱️ Rest Timer';
-    timerButton.style.margin = '20px 0';
+function setupDaySelection() {
+    console.log("Setting up day selection...");
+    const dayButtons = document.querySelectorAll('.day-selection button');
     
-    // Create timer element
-    const timerElement = document.createElement('div');
-    timerElement.id = 'rest-timer';
-    timerElement.className = 'rest-timer';
-    timerElement.innerHTML = `
-        <div class="timer-display" id="timer-display">00:00</div>
-        <div class="timer-controls">
-            <button id="timer-60">60s</button>
-            <button id="timer-90">90s</button>
-            <button id="timer-120">120s</button>
-            <button id="timer-stop" class="danger-btn">Stop</button>
-        </div>
-    `;
-    timerElement.style.display = 'none'; // Hidden by default
+    if (dayButtons.length === 0) {
+        console.log("No day selection buttons found, showing all days");
+        // If no day buttons, show all days
+        elements.dayContents.forEach(content => {
+            content.classList.add('active');
+        });
+        return;
+    }
     
-    // Add elements to the page
-    const container = document.querySelector('.container') || document.body;
-    container.insertBefore(timerButton, document.querySelector('.days-container'));
-    document.body.appendChild(timerElement);
-    
-    // Add event listeners
-    timerButton.addEventListener('click', () => {
-        if (timerElement.style.display === 'none') {
-            timerElement.style.display = 'block';
-        } else {
-            timerElement.style.display = 'none';
-        }
+    dayButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const day = parseInt(btn.dataset.day);
+            console.log(`Day button clicked: ${day}`);
+            showDay(day);
+        });
     });
     
-    document.getElementById('timer-60').addEventListener('click', () => startTimer(60));
-    document.getElementById('timer-90').addEventListener('click', () => startTimer(90));
-    document.getElementById('timer-120').addEventListener('click', () => startTimer(120));
-    document.getElementById('timer-stop').addEventListener('click', stopTimer);
+    // Show Day 1 by default
+    showDay(1);
+}
+
+/**
+ * Shows a specific workout day and hides others
+ */
+function showDay(day) {
+    console.log(`Showing day ${day}`);
+    
+    // Hide all days and deselect all buttons
+    elements.dayContents.forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    const dayButtons = document.querySelectorAll('.day-selection button');
+    dayButtons.forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected day and activate its button
+    const selectedDay = document.getElementById(`day-${day}`);
+    const selectedButton = document.querySelector(`.day-selection button[data-day="${day}"]`);
+    
+    if (selectedDay) {
+        selectedDay.classList.add('active');
+    } else {
+        console.error(`Day element not found: day-${day}`);
+    }
+    
+    if (selectedButton) {
+        selectedButton.classList.add('active');
+    } else {
+        console.error(`Day button not found for day ${day}`);
+    }
 }
 
 // ==============================================
@@ -562,7 +591,6 @@ function setupProgram() {
 
 /**
  * Starts the rest timer
- * @param {number} seconds - Number of seconds to count down
  */
 function startTimer(seconds) {
     // Clear any existing timer
@@ -593,7 +621,6 @@ function startTimer(seconds) {
 
 /**
  * Stops the rest timer
- * @param {boolean} completed - Whether timer completed naturally
  */
 function stopTimer(completed = false) {
     clearInterval(timerInterval);
@@ -654,51 +681,37 @@ function resetAllData() {
 }
 
 // ==============================================
-// DAY SELECTION - For navigating workout days
+// PROGRAM SETUP
 // ==============================================
 
 /**
- * Sets up the day selection buttons
+ * Sets up program features
  */
-function setupDaySelection() {
-    const dayButtons = document.querySelectorAll('.day-selection button');
-    dayButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const day = parseInt(btn.dataset.day);
-            showDay(day);
-        });
+function setupProgram() {
+    // Add rest timer button
+    const timerButton = document.createElement('button');
+    timerButton.id = 'timer-toggle';
+    timerButton.textContent = '⏱️ Rest Timer';
+    timerButton.style.margin = '20px 0';
+    
+    // Add elements to the page
+    const container = document.querySelector('.container') || document.body;
+    container.insertBefore(timerButton, document.querySelector('.days-container'));
+    
+    // Add event listeners for timer
+    timerButton.addEventListener('click', () => {
+        const timerElement = document.getElementById('rest-timer');
+        if (timerElement.style.display === 'none') {
+            timerElement.style.display = 'block';
+        } else {
+            timerElement.style.display = 'none';
+        }
     });
     
-    // Show Day 1 by default
-    showDay(1);
-}
-
-/**
- * Shows a specific workout day and hides others
- * @param {number} day - Day number to show (1-5)
- */
-function showDay(day) {
-    // Hide all days and deselect all buttons
-    elements.dayContents.forEach(content => {
-        content.classList.remove('active');
-    });
-    
-    const dayButtons = document.querySelectorAll('.day-selection button');
-    dayButtons.forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected day and activate its button
-    const selectedDay = document.getElementById(`day-${day}`);
-    const selectedButton = document.querySelector(`.day-selection button[data-day="${day}"]`);
-    
-    if (selectedDay) {
-        selectedDay.classList.add('active');
-    }
-    
-    if (selectedButton) {
-        selectedButton.classList.add('active');
-    }
+    document.getElementById('timer-60').addEventListener('click', () => startTimer(60));
+    document.getElementById('timer-90').addEventListener('click', () => startTimer(90));
+    document.getElementById('timer-120').addEventListener('click', () => startTimer(120));
+    document.getElementById('timer-stop').addEventListener('click', stopTimer);
 }
 
 /**
@@ -714,23 +727,27 @@ function setupEventListeners() {
 }
 
 /**
- * Updates the online/offline status indicator
+ * Check if user is online/offline
  */
 function updateOnlineStatus() {
-    // Remove any existing indicator
-    const existingIndicator = document.getElementById('offline-indicator');
-    if (existingIndicator) {
-        existingIndicator.parentNode.removeChild(existingIndicator);
-    }
+    const offlineIndicator = document.createElement('div');
+    offlineIndicator.className = 'offline-indicator';
+    offlineIndicator.id = 'offline-indicator';
     
-    // Only show indicator if offline
     if (!navigator.onLine) {
-        const offlineIndicator = document.createElement('div');
-        offlineIndicator.className = 'offline-indicator';
-        offlineIndicator.id = 'offline-indicator';
         offlineIndicator.textContent = '📴 Offline Mode';
         offlineIndicator.classList.add('show');
         document.body.appendChild(offlineIndicator);
+    } else {
+        const existingIndicator = document.getElementById('offline-indicator');
+        if (existingIndicator) {
+            existingIndicator.classList.remove('show');
+            setTimeout(() => {
+                if (existingIndicator.parentNode) {
+                    existingIndicator.parentNode.removeChild(existingIndicator);
+                }
+            }, 300);
+        }
     }
 }
 
@@ -742,25 +759,21 @@ function updateOnlineStatus() {
  * Initializes the app
  */
 function init() {
+    console.log("Initializing app...");
+    
+    // Load saved data
     loadState();
+    
+    // Setup UI components
     setupProgram();
-    setupDaySelection(); // This is critical for day selection to work
+    setupDaySelection(); // This is essential for day buttons to work
     setupEventListeners();
+    
+    // Update workouts with current data
     updateAllWorkouts();
+    
+    // Check initial online status
     updateOnlineStatus();
-    
-    // Remove "Mark Day Complete" functionality
-    const markCompleteBtns = document.querySelectorAll('.mark-complete-btn');
-    markCompleteBtns.forEach(btn => {
-        if (btn.parentNode) {
-            btn.parentNode.removeChild(btn);
-        }
-    });
-    
-    const badges = document.querySelectorAll('.completion-badge');
-    badges.forEach(badge => {
-        badge.style.display = 'none';
-    });
     
     // Check if app was launched from home screen
     if (window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches) {
@@ -770,3 +783,6 @@ function init() {
 
 // Start the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', init);
+
+// Add debugging for troubleshooting
+console.log("Script loaded!");

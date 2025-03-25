@@ -1,6 +1,5 @@
 /* 
- * nSuns 5-Day Program - Complete CSS
- * This file controls all styling for the workout tracker app
+ * nSuns 5-Day Program - Main Stylesheet
  */
 
 /* ===== CRITICAL: Day visibility rules ===== */
@@ -246,15 +245,6 @@ button:active {
     border-bottom: none;
 }
 
-.completion-badge {
-    display: none;
-    padding: 5px 10px;
-    background-color: var(--light-gray);
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-
 .workout-section {
     margin-bottom: 30px;
 }
@@ -437,6 +427,7 @@ button:active {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
     text-align: center;
+    display: none;
 }
 
 .timer-display {
@@ -497,26 +488,6 @@ button:active {
     animation: celebrate 1s ease;
 }
 
-/* ===== Offline indicator ===== */
-.offline-indicator {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-100px);
-    background-color: var(--accent-color);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 30px;
-    font-weight: 600;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease;
-    z-index: 1000;
-}
-
-.offline-indicator.show {
-    transform: translateX(-50%) translateY(0);
-}
-
 /* ===== Mobile optimizations ===== */
 @media (max-width: 768px) {
     .training-stats {
@@ -545,7 +516,6 @@ button:active {
         font-size: 2.5rem;
     }
     
-    /* Make rows more compact on mobile */
     .amrap-input {
         width: 60px;
         padding: 8px;
@@ -556,7 +526,6 @@ button:active {
         font-size: 12px;
     }
     
-    /* Better touch targets */
     button {
         padding: 14px 20px;
     }
