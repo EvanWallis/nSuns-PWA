@@ -12,6 +12,18 @@ const programData = {
         { percentage: 0.70, reps: 5 },
         { percentage: 0.65, reps: '5+' }  // AMRAP set
     ],
+    // Day 5 T1 bench press specific percentages
+    day5BenchPercentages: [
+        { percentage: 0.65, reps: 8 },
+        { percentage: 0.75, reps: 6 },
+        { percentage: 0.85, reps: 4 },
+        { percentage: 0.85, reps: 4 },
+        { percentage: 0.85, reps: 4 },
+        { percentage: 0.80, reps: 5 },
+        { percentage: 0.75, reps: 6 },
+        { percentage: 0.70, reps: 7 },
+        { percentage: 0.65, reps: '8+' }  // AMRAP set
+    ],
     // T2 percentages for accessory lifts
     t2Percentages: [
         { percentage: 0.50, reps: 5 },
@@ -82,8 +94,15 @@ function showNotification(message) {
 
 // Calculate new training max based on AMRAP performance
 function calculateNewTM(currentTM, reps, percentage) {
+    // Check if it's the Day 5 bench AMRAP set (65% for 8+ reps)
+    if (percentage === 0.65 && reps >= 8) {
+        // For Day 5 bench AMRAP
+        if (reps < 8) return currentTM - 5;
+        if (reps >= 12) return currentTM + 5;
+        return currentTM;
+    }
     // nSuns formula - if AMRAP on 1+ set
-    if (percentage === 0.95) {
+    else if (percentage === 0.95) {
         if (reps === 0) return currentTM - 10;
         if (reps === 1) return currentTM;
         if (reps === 2) return currentTM + 5;
@@ -189,11 +208,14 @@ function updateTrainingMaxes() {
 }
 
 // Generate workout table rows for T1 exercises
-function generateT1Rows(tableId, tm) {
+function generateT1Rows(tableId, tm, useDay5Format = false) {
     const tbody = document.querySelector(`#${tableId} tbody`);
     tbody.innerHTML = '';
     
-    programData.t1Percentages.forEach((set, index) => {
+    // Use Day 5 bench format if specified
+    const percentages = useDay5Format ? programData.day5BenchPercentages : programData.t1Percentages;
+    
+    percentages.forEach((set, index) => {
         const row = document.createElement('tr');
         const weight = roundToNearest5(tm * set.percentage);
         const isAmrap = typeof set.reps === 'string' && set.reps.includes('+');
@@ -287,8 +309,8 @@ function updateAllWorkouts() {
     // Day 4
     generateT1Rows('lat-t1', programState.trainingMaxes.lat);
     
-    // Day 5
-    generateT1Rows('bench-t1-day5', programState.trainingMaxes.bench);
+    // Day 5 - Use special Day 5 bench format
+    generateT1Rows('bench-t1-day5', programState.trainingMaxes.bench, true);
     generateT2Rows('cgbp-t2', programState.trainingMaxes.bench);
 }
 
