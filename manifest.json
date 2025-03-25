@@ -2,7 +2,7 @@
     "name": "Custom nSuns 5-Day Program",
     "short_name": "nSuns 5-Day",
     "description": "Custom nSuns 5-day program with automatic training max updates",
-    "start_url": ".",
+    "start_url": "/nSuns-PWA/",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#007bff",

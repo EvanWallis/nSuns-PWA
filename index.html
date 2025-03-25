@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180x180.png">
-    <link rel="apple-touch-icon" sizes="167x167" href="icons/icon-167x167.png">
+    <base href="/nSuns-PWA/">
 </head>
 <body>
     <div class="container">
@@ -231,11 +229,11 @@
 
     <script src="app.js"></script>
     <script>
-        // Register service worker
+        // Register service worker with scope for GitHub Pages
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(reg => console.log('Service Worker registered'))
+                navigator.serviceWorker.register('service-worker.js', {scope: '/nSuns-PWA/'})
+                    .then(reg => console.log('Service Worker registered with scope:', reg.scope))
                     .catch(err => console.log('Service Worker registration failed:', err));
             });
         }

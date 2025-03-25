@@ -1,12 +1,13 @@
-const CACHE_NAME = 'nsuns-pwa-v1';
+const CACHE_NAME = 'nsuns-pwa-v2';
+const BASE_PATH = '/nSuns-PWA/';
 const ASSETS_TO_CACHE = [
-  '.',
-  'index.html',
-  'styles.css',
-  'app.js',
-  'manifest.json',
-  'icons/icon-192x192.png',
-  'icons/icon-512x512.png'
+  BASE_PATH,
+  BASE_PATH + 'index.html',
+  BASE_PATH + 'styles.css',
+  BASE_PATH + 'app.js',
+  BASE_PATH + 'manifest.json',
+  BASE_PATH + 'icons/icon-192x192.png',
+  BASE_PATH + 'icons/icon-512x512.png'
 ];
 
 // Install event - cache assets
