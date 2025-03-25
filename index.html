@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#2c3e50">
     <title>Custom nSuns 5-Day Program</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
@@ -13,193 +13,224 @@
     <div class="container">
         <header>
             <h1>Custom nSuns 5-Day Program</h1>
+            <p>Track your lifts, progress automatically, and never miss a PR</p>
         </header>
         
-        <div class="training-maxes">
-            <h2>Training Maxes</h2>
-            <div class="tm-inputs">
+        <div class="training-stats">
+            <div class="stat-card">
+                <h3>Bench Press</h3>
                 <div class="tm-input">
-                    <label for="bench-tm">Bench Press (lbs)</label>
+                    <label for="bench-tm">Training Max (lbs)</label>
                     <input type="number" id="bench-tm" min="0" step="5">
                 </div>
+                <p>Last PR: <span id="bench-last-pr">None</span></p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Barbell Row</h3>
                 <div class="tm-input">
-                    <label for="row-tm">Barbell Row (lbs)</label>
+                    <label for="row-tm">Training Max (lbs)</label>
                     <input type="number" id="row-tm" min="0" step="5">
                 </div>
+                <p>Last PR: <span id="row-last-pr">None</span></p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Overhead Press</h3>
                 <div class="tm-input">
-                    <label for="ohp-tm">Overhead Press (lbs)</label>
+                    <label for="ohp-tm">Training Max (lbs)</label>
                     <input type="number" id="ohp-tm" min="0" step="5">
                 </div>
+                <p>Last PR: <span id="ohp-last-pr">None</span></p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Lat Pulldown</h3>
                 <div class="tm-input">
-                    <label for="lat-tm">Lat Pulldown (lbs)</label>
+                    <label for="lat-tm">Training Max (lbs)</label>
                     <input type="number" id="lat-tm" min="0" step="5">
                 </div>
-                <button id="save-tms">Save Training Maxes</button>
+                <p>Last PR: <span id="lat-last-pr">None</span></p>
             </div>
+        </div>
+        
+        <div class="program-controls">
+            <button id="save-tms" class="save-btn">Save All Training Maxes</button>
+            <button id="reset-all" class="danger-btn">Reset All Data</button>
         </div>
 
         <div class="days-container">
-            <div class="program-controls">
-                <div class="program-info">
-                    <h3>5-Day Program</h3>
-                    <p>All workouts shown below</p>
+            <div class="day-content" id="day-1">
+                <div class="day-header">
+                    <h2>Day 1: Bench Press & Overhead Press</h2>
+                    <span class="completion-badge" id="day1-badge">Not Completed</span>
                 </div>
-                <button id="reset-all" class="danger-btn">Reset All Data</button>
+                <div class="workout-section">
+                    <h3>T1: Bench Press</h3>
+                    <table class="workout-table" id="bench-t1">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                                <th>AMRAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="workout-section">
+                    <h3>T2: Overhead Press</h3>
+                    <table class="workout-table" id="ohp-t2">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mark-complete-btn" data-day="1">Mark Day Complete</button>
             </div>
 
-            <div class="tab-content">
-                <div class="day-content active" id="day-1">
-                    <h2>Day 1: Bench Press & Overhead Press</h2>
-                    <div class="workout-section">
-                        <h3>T1: Bench Press</h3>
-                        <table class="workout-table" id="bench-t1">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                    <th>AMRAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="workout-section">
-                        <h3>T2: Overhead Press</h3>
-                        <table class="workout-table" id="ohp-t2">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="day-content" id="day-2">
+            <div class="day-content" id="day-2">
+                <div class="day-header">
                     <h2>Day 2: Barbell Row</h2>
-                    <div class="workout-section">
-                        <h3>T1: Barbell Row</h3>
-                        <table class="workout-table" id="row-t1">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                    <th>AMRAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <span class="completion-badge" id="day2-badge">Not Completed</span>
                 </div>
+                <div class="workout-section">
+                    <h3>T1: Barbell Row</h3>
+                    <table class="workout-table" id="row-t1">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                                <th>AMRAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mark-complete-btn" data-day="2">Mark Day Complete</button>
+            </div>
 
-                <div class="day-content" id="day-3">
+            <div class="day-content" id="day-3">
+                <div class="day-header">
                     <h2>Day 3: Overhead Press & Incline Bench</h2>
-                    <div class="workout-section">
-                        <h3>T1: Overhead Press</h3>
-                        <table class="workout-table" id="ohp-t1">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                    <th>AMRAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="workout-section">
-                        <h3>T2: Incline Bench</h3>
-                        <table class="workout-table" id="incline-t2">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <span class="completion-badge" id="day3-badge">Not Completed</span>
                 </div>
+                <div class="workout-section">
+                    <h3>T1: Overhead Press</h3>
+                    <table class="workout-table" id="ohp-t1">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                                <th>AMRAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="workout-section">
+                    <h3>T2: Incline Bench</h3>
+                    <table class="workout-table" id="incline-t2">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mark-complete-btn" data-day="3">Mark Day Complete</button>
+            </div>
 
-                <div class="day-content" id="day-4">
+            <div class="day-content" id="day-4">
+                <div class="day-header">
                     <h2>Day 4: Lat Pulldown</h2>
-                    <div class="workout-section">
-                        <h3>T1: Lat Pulldown</h3>
-                        <table class="workout-table" id="lat-t1">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                    <th>AMRAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <span class="completion-badge" id="day4-badge">Not Completed</span>
                 </div>
+                <div class="workout-section">
+                    <h3>T1: Lat Pulldown</h3>
+                    <table class="workout-table" id="lat-t1">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                                <th>AMRAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mark-complete-btn" data-day="4">Mark Day Complete</button>
+            </div>
 
-                <div class="day-content" id="day-5">
+            <div class="day-content" id="day-5">
+                <div class="day-header">
                     <h2>Day 5: Bench Press & Close Grip Bench Press</h2>
-                    <div class="workout-section">
-                        <h3>T1: Bench Press</h3>
-                        <table class="workout-table" id="bench-t1-day5">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                    <th>AMRAP</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="workout-section">
-                        <h3>T2: Close Grip Bench Press</h3>
-                        <table class="workout-table" id="cgbp-t2">
-                            <thead>
-                                <tr>
-                                    <th>Set</th>
-                                    <th>Percentage</th>
-                                    <th>Weight (lbs)</th>
-                                    <th>Reps</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Will be filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <span class="completion-badge" id="day5-badge">Not Completed</span>
                 </div>
+                <div class="workout-section">
+                    <h3>T1: Bench Press</h3>
+                    <table class="workout-table" id="bench-t1-day5">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                                <th>AMRAP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="workout-section">
+                    <h3>T2: Close Grip Bench Press</h3>
+                    <table class="workout-table" id="cgbp-t2">
+                        <thead>
+                            <tr>
+                                <th>Set</th>
+                                <th>Percentage</th>
+                                <th>Weight (lbs)</th>
+                                <th>Reps</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Will be filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button class="mark-complete-btn" data-day="5">Mark Day Complete</button>
             </div>
         </div>
 
@@ -213,6 +244,17 @@
 
     <div id="notification" class="notification">
         <p id="notification-message"></p>
+    </div>
+    
+    <div id="rest-timer" class="rest-timer">
+        <h3>Rest Timer</h3>
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="timer-controls">
+            <button id="timer-60">60s</button>
+            <button id="timer-90">90s</button>
+            <button id="timer-120">120s</button>
+            <button id="timer-stop" class="danger-btn">Stop</button>
+        </div>
     </div>
 
     <script src="app.js"></script>

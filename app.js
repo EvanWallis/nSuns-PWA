@@ -36,6 +36,10 @@ let programState = {
     prHistory: []
 };
 
+// Rest timer variables
+let timerInterval = null;
+let timeLeft = 0;
+
 // DOM Elements
 const elements = {
     tmInputs: {
@@ -194,10 +198,15 @@ function generateT1Rows(tableId, tm) {
         const weight = roundToNearest5(tm * set.percentage);
         const isAmrap = typeof set.reps === 'string' && set.reps.includes('+');
         
+        // Add class for AMRAP sets
+        if (isAmrap) {
+            row.classList.add('amrap-set');
+        }
+        
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${Math.round(set.percentage * 100)}%</td>
-            <td>${weight}</td>
+            <td class="weight-cell" data-weight="${weight}">${weight}</td>
             <td>${set.reps}</td>
             <td>
                 ${isAmrap ? `
@@ -218,6 +227,17 @@ function generateT1Rows(tableId, tm) {
     amrapBtns.forEach(btn => {
         btn.addEventListener('click', handleAmrapLog);
     });
+    
+    // Add plate calculator functionality to weights
+    const weightCells = tbody.querySelectorAll('.weight-cell');
+    weightCells.forEach(cell => {
+        cell.addEventListener('click', function() {
+            const weight = parseFloat(this.dataset.weight);
+            if (!isNaN(weight)) {
+                showPlateCalculation(weight);
+            }
+        });
+    });
 }
 
 // Generate workout table rows for T2 exercises
@@ -232,11 +252,22 @@ function generateT2Rows(tableId, tm) {
         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${Math.round(set.percentage * 100)}%</td>
-            <td>${weight}</td>
+            <td class="weight-cell" data-weight="${weight}">${weight}</td>
             <td>${set.reps}</td>
         `;
         
         tbody.appendChild(row);
+    });
+    
+    // Add plate calculator functionality to weights
+    const weightCells = tbody.querySelectorAll('.weight-cell');
+    weightCells.forEach(cell => {
+        cell.addEventListener('click', function() {
+            const weight = parseFloat(this.dataset.weight);
+            if (!isNaN(weight)) {
+                showPlateCalculation(weight);
+            }
+        });
     });
 }
 
@@ -316,12 +347,168 @@ function handleAmrapLog(e) {
     }
 }
 
+// Calculate plate configuration for a given weight
+function calculatePlates(weight) {
+    // Assuming 45lb bar
+    const barWeight = 45;
+    let remainingWeight = weight - barWeight;
+    
+    // Available plate weights (in lbs)
+    const plates = [45, 35, 25, 10, 5, 2.5];
+    const result = {};
+    
+    // Skip calculation if weight is less than bar
+    if (remainingWeight <= 0) {
+        return { error: "Weight is less than or equal to bar weight" };
+    }
+    
+    // Calculate plates needed on each side
+    for (const plate of plates) {
+        // How many of this plate can we fit? (divide by 2 because we need pairs)
+        const count = Math.floor(remainingWeight / (plate * 2));
+        if (count > 0) {
+            result[plate] = count;
+            remainingWeight -= count * plate * 2;
+        }
+    }
+    
+    // Check if we couldn't get to exact weight
+    if (remainingWeight > 0) {
+        // If we're off by less than 1lb, it's probably a rounding issue
+        if (remainingWeight < 1) {
+            return result;
+        }
+        return { error: "Cannot make exact weight with available plates" };
+    }
+    
+    return result;
+}
+
+// Show plate calculation
+function showPlateCalculation(weight) {
+    const plates = calculatePlates(weight);
+    
+    if (plates.error) {
+        showNotification(plates.error);
+        return;
+    }
+    
+    let plateText = "Plates per side: ";
+    let hasPlates = false;
+    
+    // Format the plate text
+    for (const [plate, count] of Object.entries(plates)) {
+        if (count > 0) {
+            plateText += `${count}×${plate}lb, `;
+            hasPlates = true;
+        }
+    }
+    
+    // Remove trailing comma and space
+    if (hasPlates) {
+        plateText = plateText.slice(0, -2);
+    } else {
+        plateText += "Just the bar";
+    }
+    
+    showNotification(plateText);
+}
+
 // No day selection needed anymore - all days are shown
 function setupProgram() {
     // Add some visual enhancements
     elements.dayContents.forEach(content => {
         content.classList.add('show-all');
     });
+    
+    // Add rest timer button
+    const timerButton = document.createElement('button');
+    timerButton.id = 'timer-toggle';
+    timerButton.textContent = '⏱️ Rest Timer';
+    timerButton.style.margin = '20px 0';
+    
+    // Create timer element
+    const timerElement = document.createElement('div');
+    timerElement.id = 'rest-timer';
+    timerElement.className = 'rest-timer';
+    timerElement.innerHTML = `
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="timer-controls">
+            <button id="timer-60">60s</button>
+            <button id="timer-90">90s</button>
+            <button id="timer-120">120s</button>
+            <button id="timer-stop" class="danger-btn">Stop</button>
+        </div>
+    `;
+    timerElement.style.display = 'none'; // Hidden by default
+    
+    // Add elements to the page
+    const container = document.querySelector('.container') || document.body;
+    container.insertBefore(timerButton, document.querySelector('.days-container'));
+    document.body.appendChild(timerElement);
+    
+    // Add event listeners
+    timerButton.addEventListener('click', () => {
+        if (timerElement.style.display === 'none') {
+            timerElement.style.display = 'block';
+        } else {
+            timerElement.style.display = 'none';
+        }
+    });
+    
+    document.getElementById('timer-60').addEventListener('click', () => startTimer(60));
+    document.getElementById('timer-90').addEventListener('click', () => startTimer(90));
+    document.getElementById('timer-120').addEventListener('click', () => startTimer(120));
+    document.getElementById('timer-stop').addEventListener('click', stopTimer);
+}
+
+// Rest timer functions
+function startTimer(seconds) {
+    // Clear any existing timer
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+    
+    timeLeft = seconds;
+    updateTimerDisplay();
+    
+    // Make timer visible
+    document.getElementById('rest-timer').style.display = 'block';
+    
+    // Add vibration feedback if available
+    if (window.navigator && window.navigator.vibrate) {
+        window.navigator.vibrate(100);
+    }
+    
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        
+        if (timeLeft <= 0) {
+            stopTimer(true);
+        }
+    }, 1000);
+}
+
+function stopTimer(completed = false) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    
+    if (completed) {
+        // Vibration feedback if available
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate([100, 100, 100]);
+        }
+        
+        showNotification('Rest complete! Ready for your next set.');
+    }
+}
+
+function updateTimerDisplay() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer-display').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 // Reset all data
